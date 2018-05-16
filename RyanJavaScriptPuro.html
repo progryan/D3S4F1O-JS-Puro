@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<h2>1 - JavaScript puro: </h2>
+<a HREF = "https://gist.github.com/jlbfalcao/515d816c11e1a3ac2ff5fa540c671676">https://gist.github.com/jlbfalcao/515d816c11e1a3ac2ff5fa540c671676</a>
+
+<p><b>Resultado para os fatos o esquema passado como parametro: </b></p>
+
+<script>
+
+"use strict";
+var facts = [
+  ['gabriel', 'endereço', 'av rio branco, 109', true],
+  ['joão', 'endereço', 'rua alice, 10', true],
+  ['joão', 'endereço', 'rua bob, 88', true],
+  ['joão', 'telefone', '234-5678', true],
+  ['joão', 'telefone', '91234-5555', true],
+  ['joão', 'telefone', '234-5678', false],
+  ['gabriel', 'telefone', '98888-1111', true],
+  ['gabriel', 'telefone', '98888-1111', false],
+  ['gabriel', 'telefone', '56789-1010', true],
+];
+
+var schema = [
+    ['endereço', 'cardinality', 'one'],
+    ['telefone', 'cardinality', 'many']	
+];
+function existe(object, array){   //VERIFICAR SE EXISTE O OBJETO NUM ARRAY
+	for(var n = 0; n < array.length; n++){
+		if(object == array[n])
+			return true;
+	}
+	return false;
+}
+
+function separarNomes(fatos){ //SEPARA OS NOMES DAS TUPLAS E COLOCA EM UM ARRAY DE NOMES
+	var names = [];
+	for(var i = 0; i < fatos.length; i++){
+		if(!existe(fatos[i][0], names)){
+			names.push(fatos[i][0]);
+		}
+	}
+	return names;
+}
+
+function removerFatoQueNaoEhMaisFato(fatos){ //remove os fatos que possuem tupla falsa correspondente
+	var novosFatos = fatos;
+	var cont = 0;
+	var v = novosFatos.length;
+	
+	for(var i = v - 1; i >= 0; i--){ //percorre o de tras pra frente
+		if(novosFatos[i] != null && !novosFatos[i][3]){
+			var aux = novosFatos[i];
+			novosFatos[i] = null; //atribui null ao falso primeiro
+			for(var y = i - 1; y >= 0 ; y--){ //volta do inicio do array e procura a tupla correspondente
+				if(novosFatos[y][0] == aux[0]){ //compara nome
+					if(novosFatos[y][1] == aux[1]){ //compara tipo end ou tipo tel
+						if(novosFatos[y][2] == aux[2]){ //compara end ou tel
+							novosFatos[y] = null; //removo a tupla false que vem depois
+						}
+					}
+				}	
+			}
+		}
+		cont++;
+	}
+	//document.write(JSON.stringify(novosFatos));
+	var cpy = [];
+	for(var t = 0; t < v; t++){
+		if(novosFatos[t] != null){
+			cpy.push(novosFatos[t]);
+		}
+	}
+	//document.write(JSON.stringify(cpy));
+	return cpy;
+}
+function vigente(facts, schema){
+	var names = separarNomes(facts);
+	var fatosFatosMesmo = removerFatoQueNaoEhMaisFato(facts); //remove os fatos que possuem tupla falsa correspondente
+	var namesEnd = [];
+	var namesTel = [];
+	var j = 0;
+	for(var i = 0; i < fatosFatosMesmo.length; i++){
+		if(fatosFatosMesmo[i][1] == schema[0][schema[0].indexOf(fatosFatosMesmo[i][1])]) //compara se eh end (one)
+			namesEnd[fatosFatosMesmo[i][0]] = fatosFatosMesmo[i]; //ATRIBUICAO de apenas 1 endereço ao nome (one)
+		else if (fatosFatosMesmo[i][1] == schema[1][schema[1].indexOf(fatosFatosMesmo[i][1])]) //compara se eh tel (mult)
+			namesTel[j++] = fatosFatosMesmo[i]; //ADICAO de 0 ou mais telefones ao nome (mult)
+		else
+			return -1; //erro
+	}
+	var tuplas_validas = []
+	for(var a = 0; a < fatosFatosMesmo.length; a++){ //Imprimir as tuplas validas
+		if(a < names.length)
+			tuplas_validas.push(namesEnd[names[a]]); //mapaeia no nome
+		if(a > names.length)
+			tuplas_validas.push(namesTel[a - names.length - 1]); //mapeia no indice
+	}
+	document.write(JSON.stringify(tuplas_validas));
+}
+
+vigente(facts, schema);
+
+
+</script>
+</body>
+</html>
