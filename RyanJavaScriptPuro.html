@@ -54,14 +54,10 @@ function removerFatoQueNaoEhMaisFato(fatos){ //remove os fatos que possuem tupla
 			var aux = novosFatos[i];
 			novosFatos[i] = null; //atribui null ao falso primeiro
 			for(var y = i - 1; y >= 0 ; y--){ //volta do inicio do array e procura a tupla correspondente
-				if(novosFatos[y][0] == aux[0]){ //compara nome
-					if(novosFatos[y][1] == aux[1]){ //compara tipo end ou tipo tel
-						if(novosFatos[y][2] == aux[2]){ //compara end ou tel
-							novosFatos[y] = null; //removo a tupla false que vem depois
-						}
-					}
-				}	
-			}
+				if(novosFatos[y][0] === aux[0] && novosFatos[y][1] === aux[1] && novosFatos[y][2] === aux[2]){ //compara nome, tipo end ou tipo tel e compara end ou tel
+					novosFatos[y] = null; //removo a tupla false que vem depois
+				}
+			}	
 		}
 		cont++;
 	}
